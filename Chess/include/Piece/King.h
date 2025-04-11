@@ -3,10 +3,15 @@
 
 class GameManager;
 
+/*
+  Implements Piece.
+  Standard chess King logic.
+  !!Currently does NOT support castling!!
+*/
 class King : public Piece {
 
 public:
-	King(const char t, coords pos);
+	King(const char t) : Piece(t) {};
 
 protected:
 	std::vector<coords> getPossibleMoves(coords pos, GameManager& manager) const override;

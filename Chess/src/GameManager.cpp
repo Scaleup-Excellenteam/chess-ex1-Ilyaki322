@@ -18,7 +18,7 @@ GameManager::GameManager(string board)
 		for (int j = 0; j < BOARD_SIZE; j++) {
 			char currSymbol = board[j + i * BOARD_SIZE];
 			if (currSymbol == '#') m_board[i][j] = nullptr;
-			else m_board[i][j] = pieceFactory.buildPiece(currSymbol, std::pair<int, int>(i, j));
+			else m_board[i][j] = pieceFactory.buildPiece(currSymbol);
 			if (currSymbol == 'K') m_whiteKing = std::pair<int, int>(i, j);
 			if (currSymbol == 'k') m_blackKing = std::pair<int, int>(i, j);
 		}

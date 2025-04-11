@@ -3,8 +3,11 @@
 #include "Piece/PieceFactory.h"
 #include "GameManager.h"
 
-Queen::Queen(const char t, coords pos) : Piece(t, pos) {}
-
+/*
+* @param pos - coordinates of the queen.
+* @param manager - referance to the GameManager.
+* @return a vector of all possible moves from current pos for a standard queen.
+*/
 std::vector<coords> Queen::getPossibleMoves(coords pos, GameManager& manager) const
 {
 	std::vector<coords> available;
@@ -21,6 +24,9 @@ std::vector<coords> Queen::getPossibleMoves(coords pos, GameManager& manager) co
 	return available;
 }
 
-bool Queen::m_isRegistered = PieceFactory::registerPiece('q', [](const char t, std::pair<int, int> pos) {
-	return std::make_unique<Queen>(t, pos);
+/*
+* Registers the queen to the factory
+*/
+bool Queen::m_isRegistered = PieceFactory::registerPiece('q', [](const char t) {
+	return std::make_unique<Queen>(t);
 	});
