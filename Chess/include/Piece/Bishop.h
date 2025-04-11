@@ -2,10 +2,10 @@
 
 #include "Piece.h"
 
-class Rook : public Piece {
+class Bishop : public Piece {
 
 public:
-	Rook(const char t, coords pos);
+	Bishop(const char t, coords pos);
 
 protected:
 	std::vector<coords> getPossibleMoves(coords pos, GameManager& manager) const override;

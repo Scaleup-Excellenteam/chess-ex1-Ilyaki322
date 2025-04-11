@@ -1,15 +1,17 @@
 #pragma once
+#include "Piece/Piece.h"
 
-#include "Piece.h"
+class GameManager;
 
-class Rook : public Piece {
+class King : public Piece {
 
 public:
-	Rook(const char t, coords pos);
+	King(const char t, coords pos);
 
 protected:
 	std::vector<coords> getPossibleMoves(coords pos, GameManager& manager) const override;
 
 private:
+	bool checkTile(coords tile, GameManager& manager) const;
 	static bool m_isRegistered;
 };

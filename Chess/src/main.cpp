@@ -4,8 +4,8 @@
 
 int main()
 {
-	//string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
-	string board = "##########K###############################R#############r#r#####";
+	string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
+	//string board = "##########K################k##############R#############r#r#####";
 	Chess a(board);
 	GameManager m(board);
 	int codeResponse = 0;
