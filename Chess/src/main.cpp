@@ -26,13 +26,7 @@ int main()
 		42 - the last movement was legal, next turn 
 		*/
 
-		/**/ 
-		{ // put your code here instead that code
-			//cout << "code response >> ";
-			//cin >> codeResponse;
-			codeResponse = m.evalPlayerMove(res);
-		}
-		/**/
+		codeResponse = m.evalPlayerMove(res);
 
 		a.setCodeResponse(codeResponse);
 		res = a.getInput(); 

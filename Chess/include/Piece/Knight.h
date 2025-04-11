@@ -2,10 +2,14 @@
 
 #include "Piece.h"
 
+/*
+  Implements Piece.
+  Standard chess Knight logic.
+*/
 class Knight : public Piece {
 
 public:
-	Knight(const char t, coords pos);
+	Knight(const char t) : Piece(t) {};
 
 protected:
 	std::vector<coords> getPossibleMoves(coords pos, GameManager& manager) const override;
