@@ -13,11 +13,12 @@ std::vector<coords> Pawn::getPossibleMoves(coords pos, GameManager& manager) con
 	coords move = std::pair<int, int>(pos.first + direction, pos.second - 1);
 	coords move2 = std::pair<int, int>(pos.first + direction, pos.second);
 	coords move3 = std::pair<int, int>(pos.first + direction, pos.second + 1);
+	coords move4 = std::pair<int, int>(pos.first + (2*direction), pos.second);
 
 	if (checkTile(move, manager, true)) available.push_back(move);
 	if (checkTile(move2, manager, false)) available.push_back(move2);
 	if (checkTile(move3, manager, true)) available.push_back(move3);
-	// check double forward
+	if (!didMove() && checkTile(move2, manager, false) && checkTile(move4, manager, false)) available.push_back(move4);
 
 	return available;
 }

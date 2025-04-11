@@ -48,11 +48,10 @@ int Piece::isMoveValid(coords pos, coords target, GameManager& manager) const
 
 	if (containCoords(getPossibleMoves(pos, manager), target)) return -1;
 
-	return 21;
+	return RC_ILLEGAL;
 }
 
 bool Piece::isAttackingKing(coords pos, coords enemyKing, GameManager& manager) const
 {
-	//coords king = std::pair<int, int>(enemyKing.second, enemyKing.first);
 	return (containCoords(getPossibleMoves(pos, manager), enemyKing));
 }

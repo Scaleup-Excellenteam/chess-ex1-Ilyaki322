@@ -24,7 +24,7 @@ protected:
 
 public:
 
-	Piece(const char t, coords pos) : m_type(t), m_pos(pos), m_isWhite(std::isupper(t)) {}
+	Piece(const char t, coords pos) : m_type(t), m_pos(pos), m_isWhite(std::isupper(t)), m_moved(false) {}
 	virtual ~Piece() = default;
 
 	virtual int isMoveValid(coords pos, coords target, GameManager& manager) const;
@@ -32,6 +32,9 @@ public:
 
 	char getPiece() const { return m_type; }
 	bool isWhite() const { return m_isWhite; }
+	bool didMove() const { return m_moved; }
+	void moved() { m_moved = true; }
 
-
+private:
+	bool m_moved;
 };
