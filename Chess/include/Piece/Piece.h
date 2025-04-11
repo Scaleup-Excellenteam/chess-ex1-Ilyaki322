@@ -12,6 +12,9 @@ class Piece {
 protected:
 
 	virtual std::vector<coords> getPossibleMoves(coords pos, GameManager& manager) const = 0;
+
+	void getSlidingMoves(std::vector<coords>& availTargets, GameManager& manager,
+		coords directon, coords start) const;
 	bool containCoords(std::vector<coords> vec, coords c) const;
 	bool isSameSide(const char other) const;
 
@@ -23,8 +26,9 @@ public:
 
 	Piece(const char t, coords pos) : m_type(t), m_pos(pos), m_isWhite(std::isupper(t)) {}
 	virtual ~Piece() = default;
-	virtual int isMoveValid(coords pos, coords target, GameManager& manager) const = 0;
-	virtual bool isAttackingKing(coords pos, coords enemyKing, GameManager& manager) const = 0;
+
+	virtual int isMoveValid(coords pos, coords target, GameManager& manager) const;
+	bool isAttackingKing(coords pos, coords enemyKing, GameManager& manager) const;
 
 	char getPiece() const { return m_type; }
 	bool isWhite() const { return m_isWhite; }
