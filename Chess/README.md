@@ -49,8 +49,11 @@ Remarks for the examiner:
 //***********************************************
 
 checkmate is not supported by the visual engine?
+
 promotion is not supported by my code nor the visual engine.
+
 special moves such as castling or en-passant are not supported.
+
 
 //***********************************************
 Known bugs:
