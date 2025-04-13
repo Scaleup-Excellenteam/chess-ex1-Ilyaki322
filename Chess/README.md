@@ -1,10 +1,10 @@
 
-##EXCELLENTEAM_EX01 - CHESS
+## EXCELLENTEAM_EX01 - CHESS
 
-##Author: Ilya Kirshtein
-##ID: 323299362
+## Author: Ilya Kirshtein
+## ID: 323299362
 
-##Overview:
+## Overview:
 
 A classic game of chess.
 
@@ -16,28 +16,28 @@ where @ is - a-h or A-H
 the first two symbols for which piece you want to move
 the second two for where to move the piece to.
 
-##Created Files:
+## Created Files:
 
-###GameManager.h && GameManager.cpp:
+### GameManager.h && GameManager.cpp:
 Responsible for general game rules, overall player mistakes, such as wrong tile selection.
 Or rules that apply to multiple pieces, such as check.
 Contains the game 'board', location of the kings for convenience, and backup data to undo if necessary.
 
-###Piece.h && Piece.cpp:
+### Piece.h && Piece.cpp:
 Abstract base class for all the game pieces.
 Inheriting classes have to implement getPossibleMoves 
 that return a vector of moves the piece can do based on given pos.
 Implements a variety of common logic for pieces, such as sliding move that the Rook, Queen, Bishop use,
 Can check if a given piece is the same side as this and more.
 
-###PieceFactory.h && PieceFactory.cpp:
+### PieceFactory.h && PieceFactory.cpp:
 Standard factory for piece creation.
 
 Pawn, Knight, Bishop, Rook, Queen, King.h && .cpp:
 All those classes inherting from Piece.
 They represent the logic for all the standard chess pieces.
 
-##Remarks for the examiner:
+## Remarks for the examiner:
 
 checkmate is not supported by the visual engine?
 
