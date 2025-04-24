@@ -1,4 +1,3 @@
-#pragma once
 #include "Piece/Piece.h"
 #include "GameManager.h"
 
