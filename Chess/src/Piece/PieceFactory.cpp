@@ -1,4 +1,3 @@
-#pragma once
 #include <cctype>
 #include "Piece/PieceFactory.h"
 

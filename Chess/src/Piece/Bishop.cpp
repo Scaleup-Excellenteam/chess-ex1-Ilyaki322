@@ -1,4 +1,3 @@
-#pragma once
 #include "Piece/Bishop.h"
 #include "Piece/PieceFactory.h"
 #include "GameManager.h"
