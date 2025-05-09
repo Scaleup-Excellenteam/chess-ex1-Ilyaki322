@@ -18,8 +18,6 @@ typedef std::pair<int, int> coords;
 class Piece {
 protected:
 
-	virtual std::vector<coords> getPossibleMoves(coords pos, GameManager& manager) const = 0;
-
 	void getSlidingMoves(std::vector<coords>& availTargets, GameManager& manager,
 		coords directon, coords start) const;
 	bool containCoords(std::vector<coords> vec, coords c) const;
@@ -32,6 +30,8 @@ public:
 
 	Piece(const char t) : m_type(t), m_isWhite(std::isupper(t)), m_moved(false) {}
 	virtual ~Piece() = default;
+
+	virtual std::vector<coords> getPossibleMoves(coords pos, GameManager& manager) const = 0;
 
 	virtual int isMoveValid(coords pos, coords target, GameManager& manager) const;
 	bool isAttackingKing(coords pos, coords enemyKing, GameManager& manager) const;

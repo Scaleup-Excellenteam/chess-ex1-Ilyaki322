@@ -45,8 +45,17 @@ int GameManager::evalPlayerMove(string playerInput)
 	if (pieceLogic != -1) return pieceLogic;
 
 	playMove2(srcInt, targetInt);
+	int res = checkCheck();
 
-	return checkCheck();
+	if (res == (int)RC_LEADS_TO_MATE) {
+		undoLastMove2();
+		return res;
+	}
+
+	m_whitePlayerTurn = !m_whitePlayerTurn;
+	if (m_lastMoving) m_lastMoving->moved();
+
+	return res;
 }
 
 /*
@@ -192,22 +201,41 @@ int GameManager::checkCheck()
 	// Played move checkmated himself, undo.
 	if ((m_whitePlayerTurn && isKingUnderAttack(m_whiteKing, true)) ||
 		(!m_whitePlayerTurn && isKingUnderAttack(m_blackKing, false))) {
-		undoLastMove2();
 		return RC_LEADS_TO_MATE;
 	}
 
 	// Player checked the enemy player.
 	if ((m_whitePlayerTurn && isKingUnderAttack(m_blackKing, false)) ||
 		(!m_whitePlayerTurn && isKingUnderAttack(m_whiteKing, true))) {
-		m_whitePlayerTurn = !m_whitePlayerTurn;
-		if(m_lastMoving) m_lastMoving->moved();
 		return RC_OK_CHECK;
 	}
 
 	// No checks.
-	m_whitePlayerTurn = !m_whitePlayerTurn;
-	if(m_lastMoving) m_lastMoving->moved();
 	return RC_OK;
+}
+
+const std::vector<std::vector<std::pair<coords, coords>>> GameManager::getAllMoves(bool white)
+{
+	std::vector<std::vector<std::pair<coords, coords>>> moves;
+
+	for (int i = 0; i < BOARD_SIZE; i++) 
+	for (int j = 0; j < BOARD_SIZE; j++) {
+		if (m_board[i][j] == nullptr) continue;
+		if (m_board[i][j]->isWhite() == white) {
+			coords start = { i,j };
+			auto possibleMoves = m_board[i][j]->getPossibleMoves(start, *this);
+			std::vector<std::pair<coords, coords>> validMoves;
+			for (const auto& m : possibleMoves) {
+				playMove2(start, m);
+				std::pair<coords, coords> move(start, m);
+				if (checkCheck() != RC_LEADS_TO_MATE) validMoves.emplace_back(move);
+				undoLastMove2();
+			}
+			moves.push_back(validMoves);
+		}
+	}
+
+	return moves;
 }
 
 /*

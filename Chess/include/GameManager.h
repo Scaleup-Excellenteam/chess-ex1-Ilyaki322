@@ -30,6 +30,11 @@ public:
 	GameManager(string board);
 
 	int evalPlayerMove(string playerInput);
+	void playMove2(coords src, coords target);
+	void undoLastMove2();
+	int checkCheck(); // hehe
+
+	const std::vector<std::vector<std::pair<coords, coords>>> getAllMoves(bool white);
 
 	const std::unique_ptr<Piece>(&getBoard() const)[BOARD_SIZE][BOARD_SIZE];
 
@@ -40,11 +45,8 @@ private:
 	int evalPiece(coords src, coords target);
 
 	void playMove(coords src, coords target);
-	void playMove2(coords src, coords target);
 	void undoLastMove();
-	void undoLastMove2();
 
-	int checkCheck(); // hehe
 	bool isKingUnderAttack(coords kingPos, bool isWhite);
 
 	std::unique_ptr<Piece> m_board[BOARD_SIZE][BOARD_SIZE];

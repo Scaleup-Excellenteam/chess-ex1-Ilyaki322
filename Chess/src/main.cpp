@@ -25,7 +25,6 @@ int main()
 		41 - the last movement was legal and cause check 
 		42 - the last movement was legal, next turn 
 		*/
-
 		codeResponse = m.evalPlayerMove(res);
 
 		a.setCodeResponse(codeResponse);
