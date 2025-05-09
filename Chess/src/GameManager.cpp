@@ -44,7 +44,7 @@ int GameManager::evalPlayerMove(string playerInput)
 	int pieceLogic = evalPiece(srcInt, targetInt);
 	if (pieceLogic != -1) return pieceLogic;
 
-	playMove(srcInt, targetInt);
+	playMove2(srcInt, targetInt);
 
 	return checkCheck();
 }
@@ -129,6 +129,32 @@ void GameManager::playMove(coords src, coords target)
 	// save piece that moved (to toggle moved() flag later if needed).
 	m_lastMoving = m_board[target.first][target.second].get();
 }
+void GameManager::playMove2(coords src, coords target)
+{
+	std::unique_ptr<Piece> defeated = nullptr;
+	if (m_board[target.first][target.second] != nullptr)
+		defeated = std::move(m_board[target.first][target.second]);
+
+	MoveLog log{
+		m_whiteKing,
+		m_blackKing,
+		src,
+		target,
+		std::move(defeated)
+	};
+	m_logStack.insert(std::move(log));
+
+	// move src -> target
+	m_board[target.first][target.second] = std::move(m_board[src.first][src.second]);
+	m_board[src.first][src.second] = nullptr;
+
+	// save kings locations
+	if (m_whiteKing == src) m_whiteKing = target;
+	if (m_blackKing == src) m_blackKing = target;
+
+	// save piece that moved (to toggle moved() flag later if needed).
+	m_lastMoving = m_board[target.first][target.second].get();
+}
 
 /*
 * If we found that the last move caused a checkmate we undo.
@@ -144,6 +170,18 @@ void GameManager::undoLastMove()
 		m_board[m_targetLastTurn.first][m_targetLastTurn.second] = std::move(m_defeatedLastTurn);
 	}
 }
+void GameManager::undoLastMove2()
+{
+	MoveLog last = m_logStack.lastMove();
+	m_whiteKing = last._lastWKing;
+	m_blackKing = last._lastBKing;
+
+	m_board[last._startSquare.first][last._startSquare.second] = std::move(m_board[last._targetSquare.first][last._targetSquare.second]);
+
+	if (last._targetPiece != nullptr) {
+		m_board[last._targetSquare.first][last._targetSquare.second] = std::move(last._targetPiece);
+	}
+}
 
 /*
 * Checks if last move caused a checkmate
@@ -154,7 +192,7 @@ int GameManager::checkCheck()
 	// Played move checkmated himself, undo.
 	if ((m_whitePlayerTurn && isKingUnderAttack(m_whiteKing, true)) ||
 		(!m_whitePlayerTurn && isKingUnderAttack(m_blackKing, false))) {
-		undoLastMove();
+		undoLastMove2();
 		return RC_LEADS_TO_MATE;
 	}
 

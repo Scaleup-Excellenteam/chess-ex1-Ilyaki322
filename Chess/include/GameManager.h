@@ -1,6 +1,7 @@
 #pragma once
 #include "Chess.h"
 #include "Piece/Piece.h"
+#include "BoardStack.h"
 #include <memory>
 
 enum responseCode {
@@ -39,7 +40,9 @@ private:
 	int evalPiece(coords src, coords target);
 
 	void playMove(coords src, coords target);
+	void playMove2(coords src, coords target);
 	void undoLastMove();
+	void undoLastMove2();
 
 	int checkCheck(); // hehe
 	bool isKingUnderAttack(coords kingPos, bool isWhite);
@@ -56,4 +59,6 @@ private:
 	std::unique_ptr<Piece> m_defeatedLastTurn;
 	coords m_srcLastTurn;
 	coords m_targetLastTurn;
+
+	BoardStack m_logStack;
 };

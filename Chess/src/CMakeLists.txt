@@ -10,6 +10,8 @@ target_sources(Chess PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Piece/Knight.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Piece/Pawn.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GameManager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MoveAnalyzer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BoardStack.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Piece/Piece.cpp
 )
 
