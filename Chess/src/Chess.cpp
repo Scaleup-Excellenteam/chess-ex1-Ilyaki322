@@ -1,6 +1,7 @@
 #include "Chess.h"
 #include <iostream>
 #include <string>
+#include "GameManager.h"
 
 using namespace std;
 
@@ -186,6 +187,7 @@ void Chess::displayBoard() const
 // print the who is turn before getting input 
 void Chess::showAskInput() const 
 {
+	cout << m_manager.printBest() << endl;
 	if (m_turn)
 		cout << "Player 1 (White - Capital letters) >> ";
 	else
@@ -273,8 +275,8 @@ void Chess::doTurn()
 }
 
 // C'tor
-Chess::Chess(const string& start)
-	: m_boardString(start),m_codeResponse(-1)
+Chess::Chess(GameManager& m, const string& start)
+	: m_boardString(start),m_codeResponse(-1), m_manager(m)
 {
 	setFrames();
 	setPieces();

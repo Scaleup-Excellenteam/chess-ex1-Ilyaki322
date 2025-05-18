@@ -6,8 +6,8 @@ int main()
 {
 	string board = "RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr"; 
 	//string board = "##########K################k##############R#############r#r#####";
-	Chess a(board);
 	GameManager m(board);
+	Chess a(m, board);
 	int codeResponse = 0;
 	string res = a.getInput();
 	while (res != "exit")

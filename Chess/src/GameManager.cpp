@@ -1,5 +1,10 @@
 #include "GameManager.h"
 #include "Piece/PieceFactory.h"
+#include "MoveAnalyzer.h"
+#include "Exceptions/EmptyStructureException.h"
+#include "Exceptions/NoKingsFoundException.h"
+
+#include <sstream>
 
 /*
 * Inits the game board with Pieces
@@ -7,11 +12,32 @@
 */
 GameManager::GameManager(string board)
 	: m_whitePlayerTurn(true), m_defeatedLastTurn(nullptr), m_lastMoving(nullptr),
-	m_srcLastTurn(std::pair<int,int>(-1, -1)), m_targetLastTurn(std::pair<int, int>(-1, -1)),
-	m_whiteKing(std::pair<int, int>(-1, -1)), m_blackKing(std::pair<int, int>(-1, -1))
+	m_srcLastTurn(std::pair<int, int>(-1, -1)), m_targetLastTurn(std::pair<int, int>(-1, -1)),
+	m_whiteKing(std::pair<int, int>(-1, -1)), m_blackKing(std::pair<int, int>(-1, -1)), m_turnCounter(0)
+{
+	/*PieceFactory pieceFactory;
+
+	for (int i = 0; i < BOARD_SIZE; i++) {
+		for (int j = 0; j < BOARD_SIZE; j++) {
+			char currSymbol = board[j + i * BOARD_SIZE];
+			if (currSymbol == '#') m_board[i][j] = nullptr;
+			else m_board[i][j] = pieceFactory.buildPiece(currSymbol);
+			if (currSymbol == 'K') m_whiteKing = std::pair<int, int>(i, j);
+			if (currSymbol == 'k') m_blackKing = std::pair<int, int>(i, j);
+		}
+	}*/
+	try {
+		initBoard(board);
+	}
+	catch (const NoKingsFoundException& e) {
+		std::cerr <<  e.what() << std::endl;
+		initBoard("RNBQKBNRPPPPPPPP################################pppppppprnbqkbnr");
+	}
+}
+
+void GameManager::initBoard(std::string board)
 {
 	PieceFactory pieceFactory;
-	std::cout << board;
 
 	for (int i = 0; i < BOARD_SIZE; i++) {
 		for (int j = 0; j < BOARD_SIZE; j++) {
@@ -22,6 +48,9 @@ GameManager::GameManager(string board)
 			if (currSymbol == 'k') m_blackKing = std::pair<int, int>(i, j);
 		}
 	}
+
+	if (m_whiteKing.first == -1 || m_whiteKing.second == -1 ||
+		m_blackKing.first == -1 || m_blackKing.second == -1) throw NoKingsFoundException();
 }
 
 /*
@@ -53,6 +82,7 @@ int GameManager::evalPlayerMove(string playerInput)
 	}
 
 	m_whitePlayerTurn = !m_whitePlayerTurn;
+	m_turnCounter++;
 	if (m_lastMoving) m_lastMoving->moved();
 
 	return res;
@@ -77,6 +107,14 @@ std::pair<int, int> GameManager::inputToCoords(std::pair<char, char> input)
 	int col = (input.second - '0') - 1;
 
 	return std::pair<int, int>(row, col);
+}
+
+std::pair<char, char> GameManager::coordsToInput(std::pair<int, int> coord)
+{
+	char row = coord.first + 'a';
+	char col = (coord.second + '1');
+
+	return std::pair<char, char>(row, col);
 }
 
 /*
@@ -181,14 +219,20 @@ void GameManager::undoLastMove()
 }
 void GameManager::undoLastMove2()
 {
-	MoveLog last = m_logStack.lastMove();
-	m_whiteKing = last._lastWKing;
-	m_blackKing = last._lastBKing;
+	try {
+		MoveLog last = m_logStack.lastMove();
+		m_whiteKing = last._lastWKing;
+		m_blackKing = last._lastBKing;
 
-	m_board[last._startSquare.first][last._startSquare.second] = std::move(m_board[last._targetSquare.first][last._targetSquare.second]);
+		m_board[last._startSquare.first][last._startSquare.second] = std::move(m_board[last._targetSquare.first][last._targetSquare.second]);
 
-	if (last._targetPiece != nullptr) {
-		m_board[last._targetSquare.first][last._targetSquare.second] = std::move(last._targetPiece);
+		if (last._targetPiece != nullptr) {
+			m_board[last._targetSquare.first][last._targetSquare.second] = std::move(last._targetPiece);
+		}
+	}
+	catch (const EmptyStructureException& e) {
+		std::cerr << "Could not undo: " << e.what() << std::endl;
+		// handle recovery or ignore
 	}
 }
 
@@ -212,6 +256,18 @@ int GameManager::checkCheck()
 
 	// No checks.
 	return RC_OK;
+}
+
+string GameManager::printBest()
+{
+	MoveAnalyzer a(*this);
+	auto move = a.findBestMove(m_whitePlayerTurn);
+	auto start = coordsToInput(move.first);
+	auto target = coordsToInput(move.second);
+
+	std::ostringstream ss;
+	ss << "Recommended Move: " << start.first << start.second << ' ' << target.first << target.second;
+	return ss.str();
 }
 
 const std::vector<std::vector<std::pair<coords, coords>>> GameManager::getAllMoves(bool white)

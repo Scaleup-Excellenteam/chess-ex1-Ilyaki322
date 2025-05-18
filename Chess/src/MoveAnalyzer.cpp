@@ -7,10 +7,14 @@
 
 std::pair<coords, coords> MoveAnalyzer::findBestMove(bool isWhite)
 {
+    if (m_manager.getTurnCounter() < 4) {
+        return m_starter[m_manager.getTurnCounter()];
+    }
+
     std::pair<coords, coords> bestMove;
 
     /*
-    * We generate all moves, and for each move apply minimax.
+    * We generate all moves, and for each move apply minmax.
     */
     int bestValue = (isWhite) ? std::numeric_limits<int>::min() : std::numeric_limits<int>::max();
     std::vector<std::vector<std::pair<coords, coords>>> allMoves = m_manager.getAllMoves(isWhite);
@@ -93,26 +97,32 @@ int MoveAnalyzer::evaluateBoard()
             switch (pieceType) {
             case 'p': {
                 pieceValue = isWhite ? 100 : -100;
+                pieceValue = isWhite ? whitePawnTable[j + i * BOARD_SIZE] : -blackPawnTable[j + i * BOARD_SIZE];
                 break;
             }
             case 'r': {
                 pieceValue = isWhite ? 500 : -500;
+                pieceValue = isWhite ? whiteRookTable[j + i * BOARD_SIZE] : -blackRookTable[j + i * BOARD_SIZE];
                 break;
             }
             case 'n': {
                 pieceValue = isWhite ? 320 : -320;
+                pieceValue = isWhite ? whiteKnightTable[j + i * BOARD_SIZE] : -blackKnightTable[j + i * BOARD_SIZE];
                 break;
             }
             case 'b': {
                 pieceValue = isWhite ? 330 : -330;
+                pieceValue = isWhite ? whiteBishopTable[j + i * BOARD_SIZE] : -blackBishopTable[j + i * BOARD_SIZE];
                 break;
             }
             case 'q': {
                 pieceValue = isWhite ? 900 : -900;
+                pieceValue = isWhite ? whiteQueenTable[j + i * BOARD_SIZE] : -blackQueenTable[j + i * BOARD_SIZE];
                 break;
             }
             case 'k': {
                 pieceValue = isWhite ? 2000 : -2000;
+                pieceValue = isWhite ? whiteKingTableMidgame[j + i * BOARD_SIZE] : -blackKingTableMidgame[j + i * BOARD_SIZE];
                 break;
             }
             }

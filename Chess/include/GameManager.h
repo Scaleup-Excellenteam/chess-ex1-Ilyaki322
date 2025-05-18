@@ -3,6 +3,7 @@
 #include "Piece/Piece.h"
 #include "BoardStack.h"
 #include <memory>
+#include <string>
 
 enum responseCode {
 	RC_NEXT_CHECK = -1,
@@ -34,12 +35,19 @@ public:
 	void undoLastMove2();
 	int checkCheck(); // hehe
 
+	string printBest();
+
 	const std::vector<std::vector<std::pair<coords, coords>>> getAllMoves(bool white);
 
 	const std::unique_ptr<Piece>(&getBoard() const)[BOARD_SIZE][BOARD_SIZE];
+	
+	const int getTurnCounter() const { return m_turnCounter; }
 
 private:
+	void initBoard(const std::string board);
+
 	coords inputToCoords(std::pair<char, char> input);
+	std::pair<char, char> coordsToInput(std::pair<int, int> coord);
 
 	int isPlayerTurn(std::pair<char, char> input);
 	int evalPiece(coords src, coords target);
@@ -52,6 +60,8 @@ private:
 	std::unique_ptr<Piece> m_board[BOARD_SIZE][BOARD_SIZE];
 
 	bool m_whitePlayerTurn;
+	int m_turnCounter;
+
 	coords m_whiteKing;
 	coords m_blackKing;
 
