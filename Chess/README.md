@@ -40,7 +40,7 @@ for example: if we look at 3 different moves, and on the first the evaluation fa
 the enemy, then if on the second move we find a lower evaluation, we will skip the entire recursion
 of that move.
 
-##Run time:
+## Run time:
 for each depth(d) level we check ALL possible moves(m)
 if we assume checking a move is O(1) then we get O(d^m).
 if not then given checking a move = O(t) then we get O(d^mt).
