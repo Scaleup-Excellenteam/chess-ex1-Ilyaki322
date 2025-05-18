@@ -187,7 +187,8 @@ void Chess::displayBoard() const
 // print the who is turn before getting input 
 void Chess::showAskInput() const 
 {
-	cout << m_manager.printBest() << endl;
+	m_manager.calcBest();
+	cout << m_manager << endl;
 	if (m_turn)
 		cout << "Player 1 (White - Capital letters) >> ";
 	else

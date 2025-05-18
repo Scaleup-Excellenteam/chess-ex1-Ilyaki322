@@ -1,11 +1,33 @@
 #pragma once
 #include "GameManager.h"
+#include "PriorityQueue.h"
 
 typedef std::pair<int, int> coords;
 
+/*
+* struct to use with the Prio queue.
+*/
+struct move {
+    coords start;
+    coords target;
+    int score;
+
+    bool operator<(const move& other) const {
+        return score < other.score;
+    }
+
+    bool operator>(const move& other) const {
+        return score > other.score;
+    }
+};
+
+/*
+* This class uses minmax algorithm and board utility functions provided by GameManager
+* to find the best move for a given player and board.
+*/
 class MoveAnalyzer {
 public:
-	MoveAnalyzer(GameManager& manager) : m_manager(manager), m_depth(2) {}
+	MoveAnalyzer(GameManager& manager) : m_manager(manager), m_depth(3) {}
 
 	std::pair<coords, coords> findBestMove(bool isWhite);
 
@@ -16,6 +38,7 @@ private:
 
 	GameManager& m_manager;
 	const int m_depth;
+    PriorityQueue<move> m_queue;
 
 
     /*

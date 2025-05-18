@@ -15,17 +15,6 @@ GameManager::GameManager(string board)
 	m_srcLastTurn(std::pair<int, int>(-1, -1)), m_targetLastTurn(std::pair<int, int>(-1, -1)),
 	m_whiteKing(std::pair<int, int>(-1, -1)), m_blackKing(std::pair<int, int>(-1, -1)), m_turnCounter(0)
 {
-	/*PieceFactory pieceFactory;
-
-	for (int i = 0; i < BOARD_SIZE; i++) {
-		for (int j = 0; j < BOARD_SIZE; j++) {
-			char currSymbol = board[j + i * BOARD_SIZE];
-			if (currSymbol == '#') m_board[i][j] = nullptr;
-			else m_board[i][j] = pieceFactory.buildPiece(currSymbol);
-			if (currSymbol == 'K') m_whiteKing = std::pair<int, int>(i, j);
-			if (currSymbol == 'k') m_blackKing = std::pair<int, int>(i, j);
-		}
-	}*/
 	try {
 		initBoard(board);
 	}
@@ -74,7 +63,7 @@ int GameManager::evalPlayerMove(string playerInput)
 	if (pieceLogic != -1) return pieceLogic;
 
 	playMove2(srcInt, targetInt);
-	int res = checkCheck();
+	int res = checkCheck(m_whitePlayerTurn);
 
 	if (res == (int)RC_LEADS_TO_MATE) {
 		undoLastMove2();
@@ -101,7 +90,7 @@ const std::unique_ptr<Piece>(&GameManager::getBoard() const)[BOARD_SIZE][BOARD_S
 * @param input - char,char pair for board positions eg: e4, d5, ...
 * @return An int,int pair as board indices to use with the m_board array.
 */
-std::pair<int, int> GameManager::inputToCoords(std::pair<char, char> input)
+std::pair<int, int> GameManager::inputToCoords(std::pair<char, char> input) const
 {
 	int row = input.first - 'a';
 	int col = (input.second - '0') - 1;
@@ -109,7 +98,12 @@ std::pair<int, int> GameManager::inputToCoords(std::pair<char, char> input)
 	return std::pair<int, int>(row, col);
 }
 
-std::pair<char, char> GameManager::coordsToInput(std::pair<int, int> coord)
+/*
+* Translates board coordinates to board notation.
+* @param input - int,int pair as board position.
+* @return An char,char pair as board notation.
+*/
+std::pair<char, char> GameManager::coordsToInput(std::pair<int, int> coord) const
 {
 	char row = coord.first + 'a';
 	char col = (coord.second + '1');
@@ -150,32 +144,10 @@ int GameManager::evalPiece(coords src, coords target)
 
 /*
 * Plays the move src->target.
-* Also backsup incase undo is needed.
+* Also backsup to the BoardStack incase undo is needed.
 * @param src - the coordinations of the piece to move.
 * @param target - the coordinations where to move the piece.
 */
-void GameManager::playMove(coords src, coords target)
-{
-	// check if something is 'eaten' back it up.
-	if (m_board[target.first][target.second] != nullptr)
-		m_defeatedLastTurn = std::move(m_board[target.first][target.second]);
-	else m_defeatedLastTurn = nullptr;
-
-	// move src -> target
-	m_board[target.first][target.second] = std::move(m_board[src.first][src.second]);
-	m_board[src.first][src.second] = nullptr;
-
-	// save kings locations
-	if (m_whiteKing == src) m_whiteKing = target;
-	if (m_blackKing == src) m_blackKing = target;
-
-	// backup last turn
-	m_srcLastTurn = src;
-	m_targetLastTurn = target;
-
-	// save piece that moved (to toggle moved() flag later if needed).
-	m_lastMoving = m_board[target.first][target.second].get();
-}
 void GameManager::playMove2(coords src, coords target)
 {
 	std::unique_ptr<Piece> defeated = nullptr;
@@ -204,19 +176,8 @@ void GameManager::playMove2(coords src, coords target)
 }
 
 /*
-* If we found that the last move caused a checkmate we undo.
+* Undo function to undo a move, used in minmax and checking legal moves.
 */
-void GameManager::undoLastMove()
-{
-	m_board[m_srcLastTurn.first][m_srcLastTurn.second] = std::move(m_board[m_targetLastTurn.first][m_targetLastTurn.second]);
-
-	if (m_whiteKing == m_targetLastTurn) m_whiteKing = m_srcLastTurn;
-	if (m_blackKing == m_targetLastTurn) m_blackKing = m_srcLastTurn;
-
-	if (m_defeatedLastTurn != nullptr) {
-		m_board[m_targetLastTurn.first][m_targetLastTurn.second] = std::move(m_defeatedLastTurn);
-	}
-}
 void GameManager::undoLastMove2()
 {
 	try {
@@ -232,7 +193,7 @@ void GameManager::undoLastMove2()
 	}
 	catch (const EmptyStructureException& e) {
 		std::cerr << "Could not undo: " << e.what() << std::endl;
-		// handle recovery or ignore
+		exit(-1);
 	}
 }
 
@@ -240,17 +201,17 @@ void GameManager::undoLastMove2()
 * Checks if last move caused a checkmate
 * @return A corresponding ResponseCode for the graphics engine.
 */
-int GameManager::checkCheck()
+int GameManager::checkCheck(bool isWhite)
 {
 	// Played move checkmated himself, undo.
-	if ((m_whitePlayerTurn && isKingUnderAttack(m_whiteKing, true)) ||
-		(!m_whitePlayerTurn && isKingUnderAttack(m_blackKing, false))) {
+	if ((isWhite && isKingUnderAttack(m_whiteKing, true)) ||
+		(!isWhite && isKingUnderAttack(m_blackKing, false))) {
 		return RC_LEADS_TO_MATE;
 	}
 
 	// Player checked the enemy player.
-	if ((m_whitePlayerTurn && isKingUnderAttack(m_blackKing, false)) ||
-		(!m_whitePlayerTurn && isKingUnderAttack(m_whiteKing, true))) {
+	if ((isWhite && isKingUnderAttack(m_blackKing, false)) ||
+		(!isWhite && isKingUnderAttack(m_whiteKing, true))) {
 		return RC_OK_CHECK;
 	}
 
@@ -258,18 +219,34 @@ int GameManager::checkCheck()
 	return RC_OK;
 }
 
-string GameManager::printBest()
+/*
+* uses MoveAnalyzer to find best move and cache it.
+*/
+void GameManager::calcBest()
 {
 	MoveAnalyzer a(*this);
-	auto move = a.findBestMove(m_whitePlayerTurn);
-	auto start = coordsToInput(move.first);
-	auto target = coordsToInput(move.second);
+	m_best = a.findBestMove(m_whitePlayerTurn);
 
-	std::ostringstream ss;
-	ss << "Recommended Move: " << start.first << start.second << ' ' << target.first << target.second;
-	return ss.str();
 }
 
+/*
+* Print best move using operator overloading per assignment request.
+*/
+std::ostream& operator<<(std::ostream& os, const GameManager& game)
+{
+	auto move = game.m_best;
+	auto start = game.coordsToInput(move.first);
+	auto target = game.coordsToInput(move.second);
+
+	os << "Recommended Move: " << start.first << start.second << ' '
+		<< target.first << target.second;
+	return os;
+}
+
+/*
+* @param white - player to fetch all moves for.
+* @return a vector of ALL legal moves for a given player.
+*/
 const std::vector<std::vector<std::pair<coords, coords>>> GameManager::getAllMoves(bool white)
 {
 	std::vector<std::vector<std::pair<coords, coords>>> moves;
@@ -284,7 +261,7 @@ const std::vector<std::vector<std::pair<coords, coords>>> GameManager::getAllMov
 			for (const auto& m : possibleMoves) {
 				playMove2(start, m);
 				std::pair<coords, coords> move(start, m);
-				if (checkCheck() != RC_LEADS_TO_MATE) validMoves.emplace_back(move);
+				if (checkCheck(white) != RC_LEADS_TO_MATE) validMoves.emplace_back(move);
 				undoLastMove2();
 			}
 			moves.push_back(validMoves);

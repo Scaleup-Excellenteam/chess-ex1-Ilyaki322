@@ -10,7 +10,10 @@ struct DefaultComparator {
 	}
 };
 
-template<typename T, typename Comperator = DefaultComperator<T>>
+/*
+* templated Priority Queue as requested in the assignment.
+*/
+template<typename T, typename Comperator = DefaultComparator<T>>
 class PriorityQueue {
 
 public:
@@ -21,10 +24,11 @@ public:
 	{
 		auto it = m_queue.begin();
 		while (it != m_queue.end()) {
-			if (!m_cmp(item, *it)) it++;
+			if (!m_cmp(i, *it)) it++;
+			else break;
 		}
 
-		m_queue.insert(it, item);
+		m_queue.insert(it, i);
 
 		if (m_queue.size() > m_size) m_queue.pop_back();
 	}
@@ -35,7 +39,7 @@ public:
 
 		T first = m_queue.front();
 		m_queue.pop_front();
-		return T;
+		return first;
 	}
 
 	bool isEmpty() const

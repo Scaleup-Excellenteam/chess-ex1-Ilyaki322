@@ -6,7 +6,9 @@
 
 typedef std::pair<int, int> coords;
 
-
+/*
+* Struct to hold all relevant info for a specific game move.
+*/
 struct MoveLog {
 	coords _lastWKing;
 	coords _lastBKing;
@@ -25,6 +27,10 @@ struct MoveLog {
 		_targetPiece(std::move(defeated)) {}
 };
 
+/*
+* This class acts as a move stack, pushes and pops moves.
+* used to be able to reverse a few moves and not only one as in ex1.
+*/
 class BoardStack {
 public:
 	BoardStack() = default;

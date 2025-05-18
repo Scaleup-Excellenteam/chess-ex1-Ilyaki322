@@ -27,15 +27,16 @@ typedef std::pair<int, int> coords;
 */
 class GameManager {
 public:
-
+	friend std::ostream& operator<<(std::ostream& os, const GameManager& game);
 	GameManager(string board);
 
 	int evalPlayerMove(string playerInput);
 	void playMove2(coords src, coords target);
 	void undoLastMove2();
-	int checkCheck(); // hehe
+	int checkCheck(bool isWhite); // hehe
 
 	string printBest();
+	void calcBest();
 
 	const std::vector<std::vector<std::pair<coords, coords>>> getAllMoves(bool white);
 
@@ -46,8 +47,8 @@ public:
 private:
 	void initBoard(const std::string board);
 
-	coords inputToCoords(std::pair<char, char> input);
-	std::pair<char, char> coordsToInput(std::pair<int, int> coord);
+	coords inputToCoords(std::pair<char, char> input) const;
+	std::pair<char, char> coordsToInput(std::pair<int, int> coord) const;
 
 	int isPlayerTurn(std::pair<char, char> input);
 	int evalPiece(coords src, coords target);
@@ -56,6 +57,7 @@ private:
 	void undoLastMove();
 
 	bool isKingUnderAttack(coords kingPos, bool isWhite);
+	
 
 	std::unique_ptr<Piece> m_board[BOARD_SIZE][BOARD_SIZE];
 
@@ -73,4 +75,5 @@ private:
 	coords m_targetLastTurn;
 
 	BoardStack m_logStack;
+	std::pair<coords, coords> m_best;
 };
