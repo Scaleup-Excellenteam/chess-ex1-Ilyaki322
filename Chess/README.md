@@ -1,46 +1,45 @@
 
-## EXCELLENTEAM_EX01 - CHESS
+## EXCELLENTEAM_EX02 - MOVE RECOMMENDATION AND TEMPLATES
 
 ## Author: Ilya Kirshtein
 ## ID: 323299362
 
-## Overview:
+## Files Added for EX2:
 
-A classic game of chess.
+### BoardStack.h && BoardStack.cpp:
+Acts as a move stack, pushes and pops moves.
+used to be able to reverse a few moves and not only one as in ex1.
 
-*CONTROLS*: keyboard controlled.
-exit - to exit
-chess commands looks like: @#@#
-where @ is - a-h or A-H
-      # is - 1-8
-the first two symbols for which piece you want to move
-the second two for where to move the piece to.
 
-## Created Files:
+### MoveAnalyzer.h && MoveAnalyzer.cpp:
+Using the minmax and alpha beta pruning to find the best move.
 
-### GameManager.h && GameManager.cpp:
-Responsible for general game rules, overall player mistakes, such as wrong tile selection.
-Or rules that apply to multiple pieces, such as check.
-Contains the game 'board', location of the kings for convenience, and backup data to undo if necessary.
 
-### Piece.h && Piece.cpp:
-Abstract base class for all the game pieces.
-Inheriting classes have to implement getPossibleMoves 
-that return a vector of moves the piece can do based on given pos.
-Implements a variety of common logic for pieces, such as sliding move that the Rook, Queen, Bishop use,
-Can check if a given piece is the same side as this and more.
+### PriorityQueue.h && PriorityQueue.cpp:
+A templated priority queue as requested in the assignment.
+inserts in O(n) and pops on O(1).
+will keep objects up to m_size, and pop excess.
 
-### PieceFactory.h && PieceFactory.cpp:
-Standard factory for piece creation.
+EmptyStructureException.h && NoKingsFoundException.h:
+custom exceptions to handle trying to pop empty BoardStack / PriorityQueue
+or trying to start a game with no kings.
 
-Pawn, Knight, Bishop, Rook, Queen, King.h && .cpp:
-All those classes inherting from Piece.
-They represent the logic for all the standard chess pieces.
+## Minmax:
+The minmax algorithm will get a board position, and recusivly play all possible moves,
+and on those moves will apply minmax, up to depth.
+for each move it will evaluate the board and return a value,
+overall this will return a move that has the highest value.
 
-## Remarks for the examiner:
+The algorithm also uses alpha beta pruning:
+minmax plays both black and white moves, so
+it will 'cut' and stop the recursion if it finds moves that are better for the opponent,
+it assumes the opponent will make the best move for them, and so we reduce the number
+of positions we need to check.
+for example: if we look at 3 different moves, and on the first the evaluation favours
+the enemy, then if on the second move we find a lower evaluation, we will skip the entire recursion
+of that move.
 
-checkmate is not supported by the visual engine?
-
-promotion is not supported by my code nor the visual engine.
-
-special moves such as castling or en-passant are not supported.
+##Run time:
+for each depth(d) level we check ALL possible moves(m)
+if we assume checking a move is O(1) then we get O(d^m).
+if not then given checking a move = O(t) then we get O(d^mt).
