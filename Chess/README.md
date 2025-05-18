@@ -43,4 +43,5 @@ of that move.
 ## Run time:
 for each depth(d) level we check ALL possible moves(m)
 if we assume checking a move is O(1) then we get O(d^m).
+
 if not then given checking a move = O(t) then we get O(d^mt).
